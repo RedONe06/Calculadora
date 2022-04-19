@@ -32,6 +32,21 @@ body {
     border-radius: 5px;
 }
 
+#display{
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+}
+
+#historico{
+    margin-bottom: 0;
+    height: 50px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    font: normal 2rem serif;
+    color: gray;
+    letter-spacing: 5px;
+}
+
 .calculator-buttons {
     /*para o alinhamento dos botões foi utilizado o display: grid, o mesmo
         está disposto em 4 colunas */

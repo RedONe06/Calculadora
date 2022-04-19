@@ -5,14 +5,16 @@
 'use strict';
 
 const display = document.getElementById('display');
+const historico = document.getElementById('historico')
 const numeros = document.querySelectorAll('[id*=tecla]');
 //Cria um vetor com os valores de id que contém "tecla", cada elemento do vetor vira um objeto.
 const operadores = document.querySelectorAll('[id*=operador]');
 //Cria um vetor com os valores de id que contém "operador", cada elemento do vetor vira um objeto.
 
 let novoNumero = true;
-let operador;
+var operador;
 let numeroAnterior;
+let temResultado = false;
 
 const operacaoPendente = () => operador !== undefined;
 // Teste para ver se o operador foi definido 
@@ -25,11 +27,13 @@ const operacaoPendente = () => operador !== undefined;
 const calcular = () => {
     if (operacaoPendente()) {
         novoNumero = true;
-        const numeroAtual =
-            parseFloat(display.textContent.replace(',', '.'));
-        const resultado = eval
-            (`${numeroAnterior}${operador}${numeroAtual}`);
+        var numeroAtual = parseFloat(display.textContent.replace(',', '.'));
+        atualizarHistorico('=')
+        var resultado = eval (`${numeroAnterior}${operador}${numeroAtual}`);
+        
         atualizarDisplay(resultado);
+        atualizarHistorico(resultado);
+        temResultado = true;
     }
 }
 
@@ -61,61 +65,96 @@ const atualizarDisplay = (texto) => {
     }
 }
 
-const inserirNumero = (evento) =>
+const inserirNumero = (evento) => {
     atualizarDisplay(evento.target.textContent);
-numeros.forEach(numero => numero.addEventListener('click',
-    inserirNumero));
+    atualizarHistorico(evento.target.textContent);
+}
+
+numeros.forEach(numero => numero.addEventListener('click', inserirNumero));
 
 const selecionarOperador = (evento) => {
     if (!novoNumero) {
         calcular();
         novoNumero = true;
         operador = evento.target.textContent;
-        numeroAnterior =
-            parseFloat(display.textContent.replace(',', '.'));
+        numeroAnterior = parseFloat(display.textContent.replace(',', '.'));
+        atualizarHistorico(operador)
     }
 }
-operadores.forEach(operador => operador.addEventListener('click',
-    selecionarOperador));
+
+operadores.forEach(operador => operador.addEventListener('click', selecionarOperador));
+
+const repetirCalculo = () => {
+    const repetidor = eval(`${operador}${numeroAtual}`)
+    const repeticao = eval(`${resultado}${repetidor}`)
+    atualizarDisplay(repeticao)
+    atualizarHistorico(repeticao)
+}
+
 const ativarIgual = () => {
+    if(temResultado){
+        repetirCalculo()
+    } else {
     calcular();
     operador = undefined;
+    }
 }
+
 document.getElementById('igual').addEventListener('click', ativarIgual);
-const limparDisplay = () => display.textContent = '';
-document.getElementById('limparDisplay').addEventListener('click',
-    limparDisplay);
+
+const limparDisplay = () => {
+    display.textContent = '';
+    limparHistorico();
+}
+
+const limparHistorico = () => historico.textContent = '';
+
+document.getElementById('limparDisplay').addEventListener('click', limparDisplay);
+
 const limparCalculo = () => {
     limparDisplay();
     operador = undefined;
     novoNumero = true;
     numeroAnterior = undefined;
 }
-document.getElementById('limparCalculo').addEventListener('click',
-    limparCalculo);
-const removerUltimoNumero = () => display.textContent =
-    display.textContent.slice(0, -1);
-document.getElementById('backspace').addEventListener('click',
-    removerUltimoNumero);
+
+document.getElementById('limparCalculo').addEventListener('click', limparCalculo);
+
+const removerUltimoNumero = () => {
+    display.textContent = display.textContent.slice(0, -1);
+    historico.textContent = historico.textContent.slice(0, -1);
+}
+
+document.getElementById('backspace').addEventListener('click', removerUltimoNumero);
+
 const inverterSinal = () => {
     novoNumero = true
     atualizarDisplay(display.textContent * -1);
+    atualizarHistorico(historico.textContent * -1);
 }
-document.getElementById('inverter').addEventListener('click',
-    inverterSinal);
-const existeDecimal = () => display.textContent.indexOf(',') !== -1;
+
+document.getElementById('inverter').addEventListener('click', inverterSinal);
+
+const existeDecimal = () => {
+    display.textContent.indexOf(',') !== -1;
+    historico.textContent.indexOf(',') !== -1;
+}
+
 const existeValor = () => display.textContent.length > 0;
+
 const inserirDecimal = () => {
     if (!existeDecimal()) {
         if (existeValor()) {
             atualizarDisplay(',');
+            atualizarHistorico(',');
         } else {
             atualizarDisplay('0,');
+            atualizarHistorico('0,');
         }
     }
 }
-document.getElementById('decimal').addEventListener('click',
-    inserirDecimal);
+
+document.getElementById('decimal').addEventListener('click', inserirDecimal);
 
 const mapaTeclado = {
     '0': 'tecla0',
@@ -139,11 +178,15 @@ const mapaTeclado = {
     'Escape': 'limparCalculo',
     ',': 'decimal'
 }
+
 const mapearTeclado = (evento) => {
     const tecla = evento.key;
-    const teclaPermitida = () => Object.keys(mapaTeclado).indexOf(tecla)
-        !== -1;
+    const teclaPermitida = () => Object.keys(mapaTeclado).indexOf(tecla) !== -1;
     if (teclaPermitida())
         document.getElementById(mapaTeclado[tecla]).click();
 }
 document.addEventListener('keydown', mapearTeclado);
+
+const atualizarHistorico = (texto) => {
+    historico.textContent += texto.toLocaleString('BR');
+}
