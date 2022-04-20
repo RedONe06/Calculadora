@@ -14,7 +14,6 @@ const operadores = document.querySelectorAll('[id*=operador]');
 let novoNumero = true;
 var operador;
 let numeroAnterior;
-let temResultado = false;
 
 const operacaoPendente = () => operador !== undefined;
 // Teste para ver se o operador foi definido 
@@ -29,11 +28,13 @@ const calcular = () => {
         novoNumero = true;
         var numeroAtual = parseFloat(display.textContent.replace(',', '.'));
         atualizarHistorico('=')
-        var resultado = eval (`${numeroAnterior}${operador}${numeroAtual}`);
-        
+        if(operador == "^"){
+            var resultado = eval(`${Math.pow(numeroAnterior, numeroAtual)}`)
+        } else {
+            var resultado = eval (`${numeroAnterior}${operador}${numeroAtual}`);
+        }
         atualizarDisplay(resultado);
         atualizarHistorico(resultado);
-        temResultado = true;
     }
 }
 
@@ -92,12 +93,8 @@ const repetirCalculo = () => {
 }
 
 const ativarIgual = () => {
-    if(temResultado){
-        repetirCalculo()
-    } else {
     calcular();
     operador = undefined;
-    }
 }
 
 document.getElementById('igual').addEventListener('click', ativarIgual);
@@ -172,6 +169,7 @@ const mapaTeclado = {
     '-': 'operadorSubtrair',
     '+': 'operadorAdicionar',
     '=': 'igual',
+    '^': 'potencia',
     'Enter': 'igual',
     'Backspace': 'backspace',
     'c': 'limparDisplay',
