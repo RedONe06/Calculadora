@@ -48,8 +48,6 @@ body {
 }
 
 .calculator-buttons {
-    /*para o alinhamento dos botões foi utilizado o display: grid, o mesmo
-        está disposto em 4 colunas */
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-gap: 10px;

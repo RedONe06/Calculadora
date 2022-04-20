@@ -1,27 +1,15 @@
-//ideias: 
-//refazer a última operação quando apertar o = de novo
-//mostrar histório de c
-
 'use strict';
 
 const display = document.getElementById('display');
 const historico = document.getElementById('historico')
 const numeros = document.querySelectorAll('[id*=tecla]');
-//Cria um vetor com os valores de id que contém "tecla", cada elemento do vetor vira um objeto.
 const operadores = document.querySelectorAll('[id*=operador]');
-//Cria um vetor com os valores de id que contém "operador", cada elemento do vetor vira um objeto.
 
 let novoNumero = true;
 var operador;
 let numeroAnterior;
 
 const operacaoPendente = () => operador !== undefined;
-// Teste para ver se o operador foi definido 
-
-/* A função só será executada se uma operação estiver definida. O número anterior já está guardado, 
- ao inserir um número novo 'novoNumero' é setado a true. O número atual é formatado. O resultado mostrado
- é a operação entre o número na memória, operador e o último número guardado.
- eval é uma função "parse" que muda o conteúdo string para cálculo.*/
 
 const calcular = () => {
     if (operacaoPendente()) {
@@ -38,25 +26,6 @@ const calcular = () => {
     }
 }
 
-/* De modo geral, a função atualiza o display com a string que será passada para dentro do método e
-acumula ela se não houver novo evento.
-Se houver um novo número (novoNumero = true) então o display recebe o texto passado para a função 
-e o formata. Quando o primeiro número aparece na tela "novoNumero" é setado a false. Para a próxima 
-leitura de número, "novoNumero = false", portanto entra em else e acumula a string. Enquanto não houver
-a definição de outro operador os algarismos continuarão se acumulando. 
-*/
-
-/* CONTEÚDO GERAL - DEFINIÇÃO DA FÓRMULA
-novoNumero = true ----> qualquer número add vai ser novo
-colocou o primeiro número = iniciou o acumulador
-definiu um operador ----> operacaoPendente = defined
-método calcular fica true e define novoNumero a true
-
-quando roda o método atualizar display com o resultado, novoNumero = true.
-Quando entra no if novoNumero = false.
-Resultado +=
-*/
-
 const atualizarDisplay = (texto) => {
     if (novoNumero) {
         display.textContent = texto.toLocaleString('BR');
@@ -64,6 +33,10 @@ const atualizarDisplay = (texto) => {
     } else {
         display.textContent += texto.toLocaleString('BR');
     }
+}
+
+const atualizarHistorico = (texto) => {
+    historico.textContent += texto.toLocaleString('BR');
 }
 
 const inserirNumero = (evento) => {
@@ -183,8 +156,6 @@ const mapearTeclado = (evento) => {
     if (teclaPermitida())
         document.getElementById(mapaTeclado[tecla]).click();
 }
+
 document.addEventListener('keydown', mapearTeclado);
 
-const atualizarHistorico = (texto) => {
-    historico.textContent += texto.toLocaleString('BR');
-}
