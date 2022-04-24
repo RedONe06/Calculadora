@@ -8,21 +8,41 @@ const operadores = document.querySelectorAll('[id*=operador]');
 let novoNumero = true;
 var operador;
 let numeroAnterior;
+var lastOperator;
+let lastNAtual;
+var lastResultado;
+var numeroAtual;
 
 const operacaoPendente = () => operador !== undefined;
+const lastOperacaoPendente = () => lastOperator !== undefined;
 
 const calcular = () => {
     if (operacaoPendente()) {
         novoNumero = true;
-        var numeroAtual = parseFloat(display.textContent.replace(',', '.'));
+        numeroAtual = parseFloat(display.textContent.replace(',', '.'));
         atualizarHistorico('=')
         if(operador == "^"){
             var resultado = eval(`${Math.pow(numeroAnterior, numeroAtual)}`)
         } else {
             var resultado = eval (`${numeroAnterior}${operador}${numeroAtual}`);
         }
+        lastResultado = resultado;
         atualizarDisplay(resultado);
         atualizarHistorico(resultado);
+    }
+}
+const calcularUltimo = () => {
+    console.log("Entrou metodo clculr ultimo")
+    if (lastOperacaoPendente()) {
+        novoNumero = true;
+        if(operador == "^"){
+            var resultado = eval(`${Math.pow(lastResultado, lastNAtual)}`)
+        } else {
+            var resultado = eval (`${lastResultado}${lastOperator}${lastNAtual}`);
+        }
+        lastResultado = resultado;
+        atualizarDisplay(resultado);
+        atualizarHistorico(lastOperator + lastNAtual + '=' + resultado);
     }
 }
 
@@ -58,15 +78,16 @@ const selecionarOperador = (evento) => {
 
 operadores.forEach(operador => operador.addEventListener('click', selecionarOperador));
 
-const repetirCalculo = () => {
-    const repetidor = eval(`${operador}${numeroAtual}`)
-    const repeticao = eval(`${resultado}${repetidor}`)
-    atualizarDisplay(repeticao)
-    atualizarHistorico(repeticao)
-}
-
 const ativarIgual = () => {
-    calcular();
+    if(operador==undefined && lastOperator != undefined){
+        calcularUltimo()
+    } else{
+        calcular()
+    }
+    if(operador != undefined){
+        lastOperator = operador;
+        lastNAtual = numeroAtual;
+    }
     operador = undefined;
 }
 
